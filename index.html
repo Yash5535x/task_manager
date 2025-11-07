@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager — Pure HTML/CSS/JS (Enhanced)</title>
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --card: #fff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --accent: #4A6CF7;
+            --accent-100: #e9edff;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warn: #f59e0b;
+            --radius: 14px;
+            --shadow: 0 6px 20px rgba(17, 24, 39, .06);
+        }
+
+        .dark {
+            --bg: #0f172a;
+            --card: #0b1222;
+            --text: #e5e7eb;
+            --muted: #94a3b8;
+            --border: #1f2a44;
+            --accent: #4A6CF7;
+            --accent-100: #1b2548;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warn: #f59e0b;
+            --shadow: 0 8px 28px rgba(2, 6, 23, .35);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            color: var(--text);
+            background: var(--bg)
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            border: 0;
+            border-radius: 12px;
+            background: var(--accent);
+            color: #fff;
+            padding: .65rem 1rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(74, 108, 247, .25);
+            transition: .2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(.98)
+        }
+
+        .btn.secondary {
+            background: #111827
+        }
+
+        .btn.muted {
+            background: var(--accent-100);
+            color: #dbe4ff
+        }
+
+        .btn.ghost {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border)
+        }
+
+        .btn.icon {
+            padding: .55rem .7rem
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow)
+        }
+
+        .input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: .65rem .8rem;
+            outline: none;
+            background: transparent;
+            color: var(--text)
+        }
+
+        .input:focus,
+        select:focus,
+        textarea:focus {
+            box-shadow: 0 0 0 6px rgba(74, 108, 247, .12);
+            border-color: #c7d2fe
+        }
+
+        .container {
+            padding: 1.25rem
+        }
+
+        .grid {
+            display: grid;
+            gap: 1rem
+        }
+
+        .grid-2 {
+            grid-template-columns: 1fr 1fr
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr)
+        }
+
+        .hidden {
+            display: none !important
+        }
+
+        .text-center {
+            text-align: center
+        }
+
+        .muted {
+            color: var(--muted)
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .93rem
+        }
+
+        .table th,
+        .table td {
+            padding: .85rem .9rem;
+            border-bottom: 1px solid var(--border);
+            text-align: left
+        }
+
+        .table th {
+            color: var(--muted);
+            font-weight: 600
+        }
+
+        .badge {
+            padding: .25rem .5rem;
+            border-radius: 999px;
+            font-size: .75rem;
+            white-space: nowrap
+        }
+
+        .badge.pending {
+            background: #fff7ed;
+            color: #b45309;
+            border: 1px solid #fed7aa
+        }
+
+        .badge.completed {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0
+        }
+
+        .badge.low {
+            background: #e5f6ff;
+            color: #0369a1;
+            border: 1px solid #bae6fd
+        }
+
+        .badge.medium {
+            background: #fff7ed;
+            color: #b45309;
+            border: 1px solid #fed7aa
+        }
+
+        .badge.high {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca
+        }
+
+        /* Layouts */
+        .auth-wrap {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 1rem
+        }
+
+        .auth-card {
+            width: min(420px, 100%);
+            padding: 2rem;
+            animation: pop .2s ease
+        }
+
+        @keyframes pop {
+            from {
+                transform: scale(.98);
+                opacity: .8
+            }
+
+            to {
+                transform: none;
+                opacity: 1
+            }
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: .65rem
+        }
+
+        .logo {
+            height: 40px;
+            width: 40px;
+            border-radius: 12px;
+            background: var(--accent);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 2px 8px rgba(74, 108, 247, .35)
+        }
+
+        .app {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 260px 1fr
+        }
+
+        .sidebar {
+            background: var(--card);
+            border-right: 1px solid var(--border);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column
+        }
+
+        .nav a,
+        .nav button {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .65rem .75rem;
+            border-radius: 12px;
+            color: var(--text);
+            transition: .15s
+        }
+
+        .nav a:hover,
+        .nav button:hover {
+            background: rgba(148, 163, 184, .15)
+        }
+
+        .nav .active {
+            background: var(--accent-100);
+            color: #fff
+        }
+
+        .spacer {
+            flex: 1
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(255, 255, 255, .7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem
+        }
+
+        .dark .header {
+            background: rgba(15, 23, 42, .6)
+        }
+
+        .avatar {
+            height: 34px;
+            width: 34px;
+            border-radius: 999px;
+            background: #e5e7eb;
+            display: grid;
+            place-items: center
+        }
+
+        .dark .avatar {
+            background: #1f2a44
+        }
+
+        .content {
+            padding: 1rem
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .app {
+                grid-template-columns: 1fr
+            }
+
+            .sidebar {
+                display: none
+            }
+        }
+
+        /* Toasts */
+        .toasts {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 9999
+        }
+
+        .toast {
+            background: var(--card);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            padding: .65rem .8rem;
+            border-radius: 12px;
+            min-width: 220px
+        }
+    </style>
+</head>
+
+<body>
+    <!-- AUTH SCREENS -->
+    <section id="auth-login" class="auth-wrap">
+        <div class="auth-card card">
+            <div class="brand" style="justify-content:center;margin-bottom:.75rem">
+                <div class="logo">TM</div>
+            </div>
+            <h2 class="text-center" style="margin:.25rem 0 1.25rem 0">Welcome back</h2>
+            <form id="loginForm" class="grid" style="gap:.75rem">
+                <label>
+                    <div class="muted" style="font-size:.9rem">Email</div>
+                    <input class="input" type="email" id="loginEmail" placeholder="you@example.com" required />
+                </label>
+                <label>
+                    <div class="muted" style="font-size:.9rem">Password</div>
+                    <input class="input" type="password" id="loginPassword" placeholder="••••••••" required />
+                </label>
+                <div class="grid grid-2">
+                    <label>
+                        <div class="muted" style="font-size:.9rem">Login as</div>
+                        <select id="loginRole" class="input">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </label>
+                    <div style="display:flex;align-items:end;gap:.5rem">
+                        <button class="btn" type="submit">Login</button>
+                        <button id="toggleThemeAuth" class="btn ghost" type="button">🌙</button>
+                    </div>
+                </div>
+            </form>
+            <div
+                style="display:flex;justify-content:space-between;align-items:center;margin-top:.75rem;font-size:.92rem">
+                <a href="#" class="muted">Forgot password?</a>
+                <a href="#register">Register</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="auth-register" class="auth-wrap hidden">
+        <div class="auth-card card">
+            <div class="brand" style="justify-content:center;margin-bottom:.75rem">
+                <div class="logo">TM</div>
+            </div>
+            <h2 class="text-center" style="margin:.25rem 0 1.25rem 0">Create your account</h2>
+            <form id="registerForm" class="grid" style="gap:.75rem">
+                <label>
+                    <div class="muted" style="font-size:.9rem">Full Name</div>
+                    <input class="input" id="regName" placeholder="Your name" required />
+                </label>
+                <label>
+                    <div class="muted" style="font-size:.9rem">Email</div>
+                    <input class="input" id="regEmail" type="email" placeholder="you@example.com" required />
+                </label>
+                <div class="grid grid-2">
+                    <label>
+                        <div class="muted" style="font-size:.9rem">Password</div>
+                        <input class="input" id="regPass" type="password" required />
+                    </label>
+                    <label>
+                        <div class="muted" style="font-size:.9rem">Confirm Password</div>
+                        <input class="input" id="regPass2" type="password" required />
+                    </label>
+                </div>
+                <button class="btn" type="submit">Register</button>
+            </form>
+            <div class="text-center" style="margin-top:.75rem;font-size:.92rem">
+                Already have an account? <a href="#login">Login</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- USER APP LAYOUT -->
+    <section id="user-app" class="app hidden">
+        <aside class="sidebar">
+            <div class="brand" style="margin-bottom:.5rem">
+                <div class="logo">TM</div>
+                <div style="font-weight:600">Task Manager</div>
+            </div>
+            <nav class="nav" id="userNav">
+                <a href="#user/dashboard" data-route="user/dashboard" class="active">🏠 Dashboard</a>
+                <a href="#user/tasks" data-route="user/tasks">🗒️ My Tasks</a>
+                <a href="#user/profile" data-route="user/profile">👤 Profile</a>
+            </nav>
+            <div class="spacer"></div>
+            <button class="btn ghost" id="userLogout">Logout</button>
+        </aside>
+        <div>
+            <div class="header">
+                <div class="brand">
+                    <div class="logo">TM</div>
+                    <div style="font-weight:600">Task Manager</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:.5rem">
+                    <button id="toggleThemeUser" class="btn icon ghost" title="Toggle theme">🌙</button>
+                    <div id="userNameTop" class="muted" style="font-size:.9rem">User</div>
+                    <div class="avatar">👤</div>
+                </div>
+            </div>
+            <div class="content">
+                <div id="user-dashboard" class="container">
+                    <h2 id="welcomeUser">Welcome, User 👋</h2>
+                    <div class="grid grid-3" style="margin-top:1rem">
+                        <div class="card" style="padding:1rem">
+                            <div class="muted" style="font-size:.9rem">Total Tasks</div>
+                            <div id="statTotal" style="font-size:1.6rem;font-weight:700;margin-top:.25rem">0</div>
+                        </div>
+                        <div class="card" style="padding:1rem">
+                            <div class="muted" style="font-size:.9rem">Completed</div>
+                            <div id="statCompleted" style="font-size:1.6rem;font-weight:700;margin-top:.25rem">0</div>
+                        </div>
+                        <div class="card" style="padding:1rem">
+                            <div class="muted" style="font-size:.9rem">Pending</div>
+                            <div id="statPending" style="font-size:1.6rem;font-weight:700;margin-top:.25rem">0</div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top:1rem;padding:1rem">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <div style="font-weight:600">Recent Tasks</div>
+                            <a class="btn" href="#user/tasks/add">➕ Add Task</a>
+                        </div>
+                        <div style="margin-top:.5rem;overflow:auto">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th>Due</th>
+                                        <th>Created</th>
+                                        <th style="text-align:right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentTasks"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="user-tasks" class="container hidden">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+                        <h2>My Tasks</h2>
+                        <div class="toolbar">
+                            <input id="searchInput" class="input" placeholder="Search tasks..."
+                                style="min-width:200px" />
+                            <select id="filterStatus" class="input" style="width:auto">
+                                <option value="all">All Status</option>
+                                <option>Pending</option>
+                                <option>Completed</option>
+                            </select>
+                            <select id="filterPriority" class="input" style="width:auto">
+                                <option value="all">All Priority</option>
+                                <option>Low</option>
+                                <option>Medium</option>
+                                <option>High</option>
+                            </select>
+                            <a class="btn" href="#user/tasks/add">➕ Add Task</a>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top:1rem;padding:1rem;overflow:auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Due</th>
+                                    <th>Created</th>
+                                    <th style="text-align:right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="taskTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="user-task-add" class="container hidden">
+                    <div class="card" style="padding:1rem;max-width:760px">
+                        <h3 style="margin:0 0 .75rem">Add Task</h3>
+                        <form id="addTaskForm" class="grid" style="gap:.75rem">
+                            <label>
+                                <div class="muted" style="font-size:.9rem">Task title</div>
+                                <input id="addTitle" class="input" placeholder="e.g., Prepare weekly report" required />
+                            </label>
+                            <label>
+                                <div class="muted" style="font-size:.9rem">Description</div>
+                                <textarea id="addDesc" class="input" rows="4" placeholder="Optional"></textarea>
+                            </label>
+                            <div class="grid grid-2">
+                                <label>
+                                    <div class="muted" style="font-size:.9rem">Status</div>
+                                    <select id="addStatus" class="input">
+                                        <option>Pending</option>
+                                        <option>Completed</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <div class="muted" style="font-size:.9rem">Priority</div>
+                                    <select id="addPriority" class="input">
+                                        <option>Low</option>
+                                        <option selected>Medium</option>
+                                        <option>High</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <label>
+                                <div class="muted" style="font-size:.9rem">Due date</div>
+                                <input id="addDue" class="input" type="date" />
+                            </label>
+                            <div style="display:flex;gap:.5rem">
+                                <button class="btn" type="submit">Submit</button>
+                                <a class="btn ghost" href="#user/tasks">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="user-task-edit" class="container hidden">
+                    <div class="card" style="padding:1rem;max-width:760px">
+                        <h3 style="margin:0 0 .75rem">Edit Task</h3>
+                        <form id="editTaskForm" class="grid" style="gap:.75rem">
+                            <input type="hidden" id="editId" />
+                            <label>
+                                <div class="muted" style="font-size:.9rem">Task title</div>
+                                <input id="editTitle" class="input" required />
+                            </label>
+                            <label>
+                                <div class="muted" style="font-size:.9rem">Description</div>
+                                <textarea id="editDesc" class="input" rows="4"></textarea>
+                            </label>
+                            <div class="grid grid-2">
+                                <label>
+                                    <div class="muted" style="font-size:.9rem">Status</div>
+                                    <select id="editStatus" class="input">
+                                        <option>Pending</option>
+                                        <option>Completed</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <div class="muted" style="font-size:.9rem">Priority</div>
+                                    <select id="editPriority" class="input">
+                                        <option>Low</option>
+                                        <option>Medium</option>
+                                        <option>High</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <label>
+                                <div class="muted" style="font-size:.9rem">Due date</div>
+                                <input id="editDue" class="input" type="date" />
+                            </label>
+                            <div style="display:flex;gap:.5rem">
+                                <button class="btn" type="submit">Save</button>
+                                <a class="btn ghost" href="#user/tasks">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="user-profile" class="container hidden">
+                    <div class="grid" style="gap:1rem;grid-template-columns:1fr 2fr">
+                        <div class="card" style="padding:1rem">
+                            <div class="avatar"
+                                style="height:56px;width:56px;border-radius:16px;margin-bottom:.5rem;font-size:1.25rem">
+                                👤</div>
+                            <div id="profileName" style="font-weight:600">User</div>
+                            <div id="profileEmail" class="muted" style="font-size:.9rem">user@example.com</div>
+                        </div>
+                        <div class="card" style="padding:1rem">
+                            <h3 style="margin:0 0 .75rem">Edit Profile</h3>
+                            <form id="profileForm" class="grid" style="gap:.75rem">
+                                <label>
+                                    <div class="muted" style="font-size:.9rem">Name</div>
+                                    <input id="profileNameInput" class="input" />
+                                </label>
+                                <label>
+                                    <div class="muted" style="font-size:.9rem">Email</div>
+                                    <input id="profileEmailInput" class="input" type="email" />
+                                </label>
+                                <button class="btn" type="submit">Save</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMIN APP LAYOUT -->
+    <section id="admin-app" class="app hidden">
+        <aside class="sidebar">
+            <div class="brand" style="margin-bottom:.5rem">
+                <div class="logo">TM</div>
+                <div style="font-weight:600">Admin Panel</div>
+            </div>
+            <nav class="nav" id="adminNav">
+                <a href="#admin/dashboard" data-route="admin/dashboard" class="active">📊 Dashboard</a>
+                <a href="#admin/users" data-route="admin/users">👥 Manage Users</a>
+                <a href="#admin/tasks" data-route="admin/tasks">🗂️ Manage Tasks</a>
+            </nav>
+            <div class="spacer"></div>
+            <button class="btn ghost" id="adminLogout">Logout</button>
+        </aside>
+        <div>
+            <div class="header">
+                <div class="brand">
+                    <div class="logo">TM</div>
+                    <div style="font-weight:600">Task Manager</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:.5rem">
+                    <button id="toggleThemeAdmin" class="btn icon ghost" title="Toggle theme">🌙</button>
+                    <div class="muted" style="font-size:.9rem">Admin</div>
+                    <div class="avatar">🛡️</div>
+                </div>
+            </div>
+            <div class="content">
+                <div id="admin-dashboard" class="container">
+                    <h2>Welcome, Admin 👋</h2>
+                    <div class="grid grid-3" style="margin-top:1rem">
+                        <div class="card" style="padding:1rem">
+                            <div class="muted" style="font-size:.9rem">Total Users</div>
+                            <div id="adTotalUsers" style="font-size:1.6rem;font-weight:700;margin-top:.25rem">0</div>
+                        </div>
+                        <div class="card" style="padding:1rem">
+                            <div class="muted" style="font-size:.9rem">Active Users</div>
+                            <div id="adActiveUsers" style="font-size:1.6rem;font-weight:700;margin-top:.25rem">0</div>
+                        </div>
+                        <div class="card" style="padding:1rem">
+                            <div class="muted" style="font-size:.9rem">Total Tasks</div>
+                            <div id="adTotalTasks" style="font-size:1.6rem;font-weight:700;margin-top:.25rem">0</div>
+                        </div>
+                    </div>
+                    <div class="grid" style="margin-top:1rem;grid-template-columns:1fr 1fr">
+                        <div class="card" style="padding:1rem">
+                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                <h3 style="margin:0">Tasks Status Overview</h3>
+                            </div>
+                            <canvas id="statusChart" height="200" style="width:100%"></canvas>
+                        </div>
+                        <div class="card" style="padding:1rem;overflow:auto">
+                            <h3 style="margin:0 0 .5rem">Recent Activity</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Action</th>
+                                        <th>When</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentActivity"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="admin-users" class="container hidden">
+                    <h2>Manage Users</h2>
+                    <div class="card" style="margin-top:1rem;padding:1rem;overflow:auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th style="text-align:right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="admin-tasks" class="container hidden">
+                    <h2>Manage Tasks</h2>
+                    <div class="card" style="margin-top:1rem;padding:1rem;overflow:auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Task ID</th>
+                                    <th>User</th>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Due</th>
+                                    <th>Created</th>
+                                    <th style="text-align:right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminTasksTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="toasts" id="toasts"></div>
+
+    <script>
+        // --- Simple SPA Router (hash-based) & State in localStorage ---
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+        const storage = {
+            get(key, fallback) {
+                try { return JSON.parse(localStorage.getItem(key)) ?? fallback } catch { return fallback }
+            },
+            set(key, val) { localStorage.setItem(key, JSON.stringify(val)) }
+        };
+
+        // Seed default admin and demo data if none
+        const seed = () => {
+            const users = storage.get('users', []);
+            if (users.length === 0) {
+                storage.set('users', [
+                    { id: 'u-admin', name: 'Admin', email: 'admin@example.com', password: 'admin123', role: 'admin', status: 'Active' },
+                    { id: 'u-1', name: 'Yash', email: 'yash@example.com', password: 'user12345', role: 'user', status: 'Active' }
+                ]);
+            }
+            const tasks = storage.get('tasks', []);
+            if (tasks.length === 0) {
+                storage.set('tasks', [
+                    { id: crypto.randomUUID(), userId: 'u-1', title: 'Design wireframes', description: 'Dashboard cards', status: 'Pending', priority: 'High', dueDate: new Date(Date.now() + 86400000 * 2).toISOString().slice(0, 10), createdAt: Date.now() - 86400000 },
+                    { id: crypto.randomUUID(), userId: 'u-1', title: 'Write API contract', description: 'CRUD endpoints', status: 'Completed', priority: 'Medium', dueDate: new Date(Date.now() + 86400000 * 5).toISOString().slice(0, 10), createdAt: Date.now() - 43200000 }
+                ]);
+            }
+            if (!storage.get('activity', null)) storage.set('activity', []);
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') document.body.classList.add('dark');
+        };
+        seed();
+
+        const state = {
+            user: storage.get('sessionUser', null),
+            filters: { q: '', status: 'all', priority: 'all' }
+        };
+
+        function setSession(u) { state.user = u; storage.set('sessionUser', u); }
+        function signOut() { setSession(null); location.hash = '#login'; }
+
+        // Theme
+        const toggleTheme = () => {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+        }
+        $('#toggleThemeAuth').addEventListener('click', toggleTheme);
+        $('#toggleThemeUser').addEventListener('click', toggleTheme);
+        $('#toggleThemeAdmin').addEventListener('click', toggleTheme);
+
+        // Toasts
+        function toast(msg) {
+            const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; $('#toasts').appendChild(t);
+            setTimeout(() => { t.style.opacity = '.6' }, 1800);
+            setTimeout(() => { t.remove() }, 2400);
+        }
+
+        // --- Auth UI ---
+        function showAuth(view) {
+            $('#auth-login').classList.toggle('hidden', view !== 'login');
+            $('#auth-register').classList.toggle('hidden', view !== 'register');
+            $('#user-app').classList.add('hidden');
+            $('#admin-app').classList.add('hidden');
+        }
+
+        function showUser(view) {
+            $('#auth-login').classList.add('hidden');
+            $('#auth-register').classList.add('hidden');
+            $('#admin-app').classList.add('hidden');
+            $('#user-app').classList.remove('hidden');
+            const sections = ['dashboard', 'tasks', 'task-add', 'task-edit', 'profile'];
+            sections.forEach(s => $('#user-' + s.replace('/', '-'))?.classList.add('hidden'));
+            if (view === 'user/dashboard') $('#user-dashboard').classList.remove('hidden');
+            if (view === 'user/tasks') $('#user-tasks').classList.remove('hidden');
+            if (view === 'user/tasks/add') $('#user-task-add').classList.remove('hidden');
+            if (view?.startsWith('user/tasks/edit')) $('#user-task-edit').classList.remove('hidden');
+            if (view === 'user/profile') $('#user-profile').classList.remove('hidden');
+            $$('#userNav a').forEach(a => a.classList.toggle('active', a.dataset.route === view));
+        }
+
+        function showAdmin(view) {
+            $('#auth-login').classList.add('hidden');
+            $('#auth-register').classList.add('hidden');
+            $('#user-app').classList.add('hidden');
+            $('#admin-app').classList.remove('hidden');
+            ['dashboard', 'users', 'tasks'].forEach(s => $('#admin-' + s).classList.add('hidden'));
+            if (view === 'admin/dashboard') $('#admin-dashboard').classList.remove('hidden');
+            if (view === 'admin/users') $('#admin-users').classList.remove('hidden');
+            if (view === 'admin/tasks') $('#admin-tasks').classList.remove('hidden');
+            $$('#adminNav a').forEach(a => a.classList.toggle('active', a.dataset.route === view));
+        }
+
+        // --- Data helpers ---
+        const Users = {
+            all() { return storage.get('users', []) },
+            save(list) { storage.set('users', list) },
+            byId(id) { return this.all().find(u => u.id === id) },
+            upsert(u) { const list = this.all(); const i = list.findIndex(x => x.id === u.id); if (i > -1) list[i] = u; else list.push(u); this.save(list) },
+            remove(id) { this.save(this.all().filter(u => u.id !== id)) },
+        }
+
+        const Tasks = {
+            all() { return storage.get('tasks', []) },
+            forUser(uid) { return this.all().filter(t => t.userId === uid) },
+            save(list) { storage.set('tasks', list) },
+            add(t) { const list = this.all(); list.push(t); this.save(list); },
+            update(id, patch) { const list = this.all().map(t => t.id === id ? { ...t, ...patch } : t); this.save(list) },
+            remove(id) { this.save(this.all().filter(t => t.id !== id)) },
+            byId(id) { return this.all().find(t => t.id === id) }
+        }
+
+        const Activity = {
+            all() { return storage.get('activity', []) },
+            push(entry) { const list = this.all(); list.unshift({ ...entry, at: Date.now() }); storage.set('activity', list.slice(0, 20)) },
+        }
+
+        // --- Rendering helpers ---
+        function fmtDate(ts) { return new Date(ts).toLocaleDateString() }
+        function badge(status) { const cls = status.toLowerCase(); return `<span class="badge ${cls}">${status}</span>`; }
+        function badgePriority(p) { return `<span class="badge ${p.toLowerCase()}">${p}</span>` }
+
+        function renderUserTopBar() {
+            if (!state.user) return;
+            $('#userNameTop').textContent = state.user.name;
+            $('#welcomeUser').textContent = `Welcome, ${state.user.name} 👋`;
+            $('#profileName').textContent = state.user.name;
+            $('#profileEmail').textContent = state.user.email;
+            $('#profileNameInput').value = state.user.name;
+            $('#profileEmailInput').value = state.user.email;
+        }
+
+        function applyFilters(list) {
+            const q = state.filters.q.toLowerCase();
+            let out = list.filter(t => t.title.toLowerCase().includes(q) || (t.description || '').toLowerCase().includes(q));
+            if (state.filters.status !== 'all') out = out.filter(t => t.status === state.filters.status);
+            if (state.filters.priority !== 'all') out = out.filter(t => t.priority === state.filters.priority);
+            return out;
+        }
+
+        function renderStats() {
+            const list = Tasks.forUser(state.user.id);
+            const total = list.length;
+            const completed = list.filter(t => t.status === 'Completed').length;
+            const pending = total - completed;
+            $('#statTotal').textContent = total;
+            $('#statCompleted').textContent = completed;
+            $('#statPending').textContent = pending;
+
+            // recent table (top 5)
+            const recent = list.slice().sort((a, b) => b.createdAt - a.createdAt).slice(0, 5);
+            const tbody = $('#recentTasks'); tbody.innerHTML = '';
+            recent.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+          <td>${t.title}</td>
+          <td>${badge(t.status)}</td>
+          <td>${badgePriority(t.priority || 'Medium')}</td>
+          <td>${t.dueDate || '-'}</td>
+          <td>${fmtDate(t.createdAt)}</td>
+          <td style="text-align:right">
+            <a class="btn muted" href="#user/tasks/edit/${t.id}">✏️ Edit</a>
+            <button class="btn ghost" data-del-task="${t.id}">🗑️ Delete</button>
+          </td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderTasksList() {
+            const listRaw = Tasks.forUser(state.user.id).sort((a, b) => b.createdAt - a.createdAt);
+            const list = applyFilters(listRaw);
+            const tbody = $('#taskTableBody'); tbody.innerHTML = '';
+            list.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+          <td>${t.title}</td>
+          <td>
+            <select data-status-id="${t.id}" class="input" style="padding:.35rem .5rem;width:auto">
+              <option ${t.status === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option ${t.status === 'Completed' ? 'selected' : ''}>Completed</option>
+            </select>
+          </td>
+          <td>${badgePriority(t.priority || 'Medium')}</td>
+          <td>${t.dueDate || '-'}</td>
+          <td>${fmtDate(t.createdAt)}</td>
+          <td style="text-align:right">
+            <a class="btn muted" href="#user/tasks/edit/${t.id}">✏️ Edit</a>
+            <button class="btn ghost" data-del-task="${t.id}">🗑️ Delete</button>
+          </td>`;
+                tbody.appendChild(tr);
+            })
+        }
+
+        function fillEditForm(id) {
+            const t = Tasks.byId(id); if (!t) return;
+            $('#editId').value = t.id;
+            $('#editTitle').value = t.title;
+            $('#editDesc').value = t.description || '';
+            $('#editStatus').value = t.status;
+            $('#editPriority').value = t.priority || 'Medium';
+            $('#editDue').value = t.dueDate || '';
+        }
+
+        // Admin rendering
+        function renderAdminStats() {
+            const users = Users.all();
+            const tasks = Tasks.all();
+            $('#adTotalUsers').textContent = users.length;
+            $('#adActiveUsers').textContent = users.filter(u => u.status === 'Active').length;
+            $('#adTotalTasks').textContent = tasks.length;
+
+            // Chart (vanilla canvas)
+            const completed = tasks.filter(t => t.status === 'Completed').length;
+            const pending = tasks.length - completed;
+            drawBarChart($('#statusChart'), [pending, completed], ['Pending', 'Completed']);
+
+            // Recent activity
+            const body = $('#recentActivity'); body.innerHTML = '';
+            Activity.all().slice(0, 5).forEach(a => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${a.user}</td><td>${a.action}</td><td>${new Date(a.at).toLocaleString()}</td>`;
+                body.appendChild(tr);
+            })
+        }
+
+        function renderAdminUsers() {
+            const body = $('#usersTable'); body.innerHTML = '';
+            Users.all().forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+          <td>${u.id}</td>
+          <td>${u.name}</td>
+          <td>${u.email}</td>
+          <td>${u.role}</td>
+          <td>${u.status}</td>
+          <td style="text-align:right">
+            <button class="btn ghost" data-edit-user="${u.id}">Edit</button>
+            <button class="btn ghost" data-block-user="${u.id}">${u.status === 'Active' ? 'Block' : 'Unblock'}</button>
+            <button class="btn" style="background:var(--danger)" data-del-user="${u.id}">Delete</button>
+          </td>`;
+                body.appendChild(tr);
+            })
+        }
+
+        function renderAdminTasks() {
+            const body = $('#adminTasksTable'); body.innerHTML = '';
+            const tasks = Tasks.all().sort((a, b) => b.createdAt - a.createdAt);
+            tasks.forEach(t => {
+                const u = Users.byId(t.userId) || { name: 'User' };
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+          <td>${t.id}</td>
+          <td>${u.name}</td>
+          <td>${t.title}</td>
+          <td>${badge(t.status)}</td>
+          <td>${badgePriority(t.priority || 'Medium')}</td>
+          <td>${t.dueDate || '-'}</td>
+          <td>${fmtDate(t.createdAt)}</td>
+          <td style="text-align:right">
+            <button class="btn" style="background:var(--danger)" data-del-task-admin="${t.id}">Delete</button>
+          </td>`;
+                body.appendChild(tr);
+            })
+        }
+
+        // Bar Chart (vanilla)
+        function drawBarChart(canvas, values, labels) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width = canvas.clientWidth; const h = canvas.height = 200;
+            ctx.clearRect(0, 0, w, h);
+            const max = Math.max(...values, 1);
+            const barW = Math.min(120, (w - 60) / values.length - 20);
+            values.forEach((v, i) => {
+                const x = 40 + i * (barW + 40);
+                const height = (v / max) * (h - 60);
+                const y = h - 40 - height;
+                ctx.fillStyle = i === 0 ? '#f59e0b' : '#10b981';
+                ctx.roundRect?.(x, y, barW, height, 8);
+                if (!ctx.roundRect) { ctx.fillRect(x, y, barW, height); } else { ctx.fill(); }
+                ctx.fillStyle = '#6b7280'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+                ctx.fillText(labels[i], x + barW / 2, h - 20);
+                ctx.fillStyle = '#111827'; ctx.font = 'bold 13px sans-serif';
+                ctx.fillText(String(v), x + barW / 2, y - 6);
+            });
+            ctx.strokeStyle = '#e5e7eb'; ctx.beginPath(); ctx.moveTo(20, h - 40); ctx.lineTo(w - 10, h - 40); ctx.stroke();
+        }
+
+        // --- Events ---
+        $('#loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = $('#loginEmail').value.trim();
+            const pass = $('#loginPassword').value;
+            const roleSel = $('#loginRole').value;
+            const u = Users.all().find(u => u.email === email && u.password === pass);
+            if (!u) { alert('Invalid credentials'); return; }
+            if (roleSel !== u.role) { alert('Selected role does not match your account role.'); return; }
+            setSession({ id: u.id, name: u.name, email: u.email, role: u.role });
+            Activity.push({ user: u.name, action: 'Logged in' });
+            location.hash = u.role === 'admin' ? '#admin/dashboard' : '#user/dashboard';
+        })
+
+        $('#registerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = $('#regName').value.trim();
+            const email = $('#regEmail').value.trim();
+            const pass = $('#regPass').value; const pass2 = $('#regPass2').value;
+            if (pass !== pass2) { alert('Passwords do not match'); return; }
+            const exists = Users.all().some(x => x.email === email);
+            if (exists) { alert('Email already registered'); return; }
+            const id = 'u-' + crypto.randomUUID().slice(0, 8);
+            Users.upsert({ id, name, email, password: pass, role: 'user', status: 'Active' });
+            setSession({ id, name, email, role: 'user' });
+            Activity.push({ user: name, action: 'Registered' });
+            location.hash = '#user/dashboard';
+        })
+
+        $('#userLogout').addEventListener('click', () => { Activity.push({ user: state.user?.name || 'User', action: 'Logged out' }); signOut(); })
+        $('#adminLogout').addEventListener('click', () => { Activity.push({ user: state.user?.name || 'Admin', action: 'Logged out' }); signOut(); })
+
+        // Add Task
+        $('#addTaskForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = $('#addTitle').value.trim();
+            const description = $('#addDesc').value.trim();
+            const status = $('#addStatus').value;
+            const priority = $('#addPriority').value;
+            const dueDate = $('#addDue').value || '';
+            if (!title) return;
+            Tasks.add({ id: crypto.randomUUID(), userId: state.user.id, title, description, status, priority, dueDate, createdAt: Date.now() });
+            Activity.push({ user: state.user.name, action: `Created task: ${title}` });
+            toast('Task created');
+            location.hash = '#user/tasks';
+        })
+
+        // Edit Task
+        $('#editTaskForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = $('#editId').value; const title = $('#editTitle').value.trim(); const description = $('#editDesc').value.trim(); const status = $('#editStatus').value; const priority = $('#editPriority').value; const dueDate = $('#editDue').value || '';
+            if (!title) return;
+            Tasks.update(id, { title, description, status, priority, dueDate });
+            Activity.push({ user: state.user.name, action: `Edited task: ${title}` });
+            toast('Task updated');
+            location.hash = '#user/tasks';
+        })
+
+        // Profile Save
+        $('#profileForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = $('#profileNameInput').value.trim(); const email = $('#profileEmailInput').value.trim();
+            const list = Users.all(); const idx = list.findIndex(u => u.id === state.user.id);
+            if (idx > -1) { list[idx] = { ...list[idx], name, email }; Users.save(list); }
+            setSession({ ...state.user, name, email });
+            Activity.push({ user: name, action: 'Updated profile' });
+            renderUserTopBar();
+            toast('Profile saved');
+        })
+
+        // Filters & Search
+        $('#searchInput').addEventListener('input', (e) => { state.filters.q = e.target.value; renderTasksList(); })
+        $('#filterStatus').addEventListener('change', (e) => { state.filters.status = e.target.value; renderTasksList(); })
+        $('#filterPriority').addEventListener('change', (e) => { state.filters.priority = e.target.value; renderTasksList(); })
+
+        // Delegated events for task list updates/deletes
+        document.addEventListener('change', (e) => {
+            const sel = e.target.closest('select[data-status-id]');
+            if (sel) { const id = sel.getAttribute('data-status-id'); Tasks.update(id, { status: sel.value }); Activity.push({ user: state.user.name, action: `Changed task status` }); renderStats(); renderTasksList(); renderAdminStats(); renderAdminTasks(); toast('Status updated'); }
+        })
+
+        document.addEventListener('click', (e) => {
+            const delBtn = e.target.closest('[data-del-task]');
+            if (delBtn) { const id = delBtn.getAttribute('data-del-task'); const t = Tasks.byId(id); if (confirm('Delete this task?')) { Tasks.remove(id); Activity.push({ user: state.user.name, action: `Deleted task: ${t?.title || id}` }); renderStats(); renderTasksList(); renderAdminStats(); renderAdminTasks(); toast('Task deleted'); } }
+            const delAdminBtn = e.target.closest('[data-del-task-admin]');
+            if (delAdminBtn) { const id = delAdminBtn.getAttribute('data-del-task-admin'); const t = Tasks.byId(id); if (confirm('Admin delete this task?')) { Tasks.remove(id); Activity.push({ user: 'Admin', action: `Removed task: ${t?.title || id}` }); renderAdminTasks(); renderAdminStats(); renderStats(); renderTasksList(); toast('Task removed'); } }
+            const blockBtn = e.target.closest('[data-block-user]');
+            if (blockBtn) { const id = blockBtn.getAttribute('data-block-user'); const list = Users.all(); const u = list.find(x => x.id === id); if (u) { u.status = (u.status === 'Active') ? 'Blocked' : 'Active'; Users.save(list); Activity.push({ user: 'Admin', action: `${u.status === 'Active' ? 'Unblocked' : 'Blocked'} user: ${u.name}` }); renderAdminUsers(); renderAdminStats(); toast('User status changed'); } }
+            const delUserBtn = e.target.closest('[data-del-user]');
+            if (delUserBtn) {
+                const id = delUserBtn.getAttribute('data-del-user'); const list = Users.all(); const u = list.find(x => x.id === id); if (u && confirm('Delete user?')) { Users.remove(id); Tasks.save(Tasks.all().filter(t => t.userId !== id)); Activity.push({ user: 'Admin', action: `Deleted user: ${u.name}` }); renderAdminUsers(); renderAdminTasks(); renderAdminStats(); toast('User deleted'); }
+            }
+        })
+
+        // --- Router ---
+        function handleRoute() {
+            const hash = location.hash.replace('#', '') || 'login';
+            if (!state.user) {
+                if (hash.startsWith('register')) showAuth('register'); else showAuth('login');
+                return;
+            }
+            if (state.user.role === 'user') {
+                if (hash.startsWith('user/')) {
+                    showUser(hash);
+                    renderUserTopBar();
+                    renderStats();
+                    renderTasksList();
+                    if (hash.startsWith('user/tasks/edit/')) { const id = hash.split('/').pop(); fillEditForm(id); }
+                } else { location.hash = '#user/dashboard'; }
+            } else if (state.user.role === 'admin') {
+                if (hash.startsWith('admin/')) {
+                    showAdmin(hash);
+                    renderAdminStats();
+                    renderAdminUsers();
+                    renderAdminTasks();
+                } else { location.hash = '#admin/dashboard'; }
+            }
+        }
+
+        window.addEventListener('hashchange', handleRoute);
+        window.addEventListener('load', () => {
+            if (!state.user) { if (location.hash === '#register') showAuth('register'); else showAuth('login'); }
+            else handleRoute();
+        })
+    </script>
+</body>
+
+</html>
